@@ -1,18 +1,14 @@
 #!/bin/bash -xe
 
-export AWS_ACCESS_KEY_ID=${myAWSAccessKey}
-export AWS_SECRET_ACCESS_KEY=${myAWSSecretKey}
+export AWS_ACCESS_KEY_ID=${bamboo_myAWSAccessKey}
+export AWS_SECRET_ACCESS_KEY=${bamboo_myAWSSecretKey}
 export AWS_DEFAULT_REGION=us-east-1
  
 PROJECT="$(basename `pwd`)"
 BUCKET="myorgs-infra-state"
 
 function terraform-install() {
-  [[ -f ${HOME}/bin/terraform ]] && echo "`${HOME}/bin/terraform version` already installed at ${HOME}/bin/terraform" && return 0
-  OS=$(uname -s)
-  LATEST_VERSION=$(curl -sL https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].version' | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | egrep -v 'alpha|beta|rc' | tail -1)
-  LATEST_URL="https://releases.hashicorp.com/terraform/${LATEST_VERSION}/terraform_${LATEST_VERSION}_${OS,,}_amd64.zip"
-  curl ${LATEST_URL} > /tmp/terraform.zip
+  curl https://releases.hashicorp.com/terraform/0.11.10/terraform_0.11.10_darwin_amd64.zip > /tmp/terraform.zip
   mkdir -p ${HOME}/bin
   (cd ${HOME}/bin && unzip /tmp/terraform.zip)
   if [[ -z $(grep 'export PATH=${HOME}/bin:${PATH}' ~/.bashrc 2>/dev/null) ]]; then
